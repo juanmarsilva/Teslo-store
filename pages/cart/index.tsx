@@ -1,16 +1,14 @@
 
-import { Card, CardContent, Divider, Grid, Typography, Button } from '@mui/material';
+import { Card, CardContent, Divider, Grid, Typography, Button, Box } from '@mui/material';
 import { NextPage } from 'next';
 import { ShopLayout } from '../../components/layouts';
-import { Box } from '@mui/system';
 import { CartList, OrdenSummary } from '../../components/cart';
-
 
 const ShoppingCartPage: NextPage = () => {
     return (
-        <ShopLayout title='Shopping Cart' pageDescription='Shopping Cart' >
+        <ShopLayout title='Carrito de compras' pageDescription='Carrito de compras' >
             
-            <Typography variant='h1' component='h1'> Shopping Cart </Typography>
+            <Typography variant='h1' component='h1'> Carrito de compras </Typography>
 
             <Grid container >
                 <Grid item xs={ 12 } sm={ 7 } >

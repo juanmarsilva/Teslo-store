@@ -4,6 +4,7 @@ import { initialData } from "../../database/products"
 import { ItemCounter } from '../ui';
 import { FC, useContext } from 'react';
 import { CartContext } from '../../context';
+import { ICartProduct } from '../../interfaces';
 
 
 
@@ -14,14 +15,18 @@ interface Props {
 
 export const CartList: FC<Props> = ({ editable }) => {
 
-    const { cart } = useContext( CartContext );
+    const { cart, updateCartQuantity, removeCartProduct } = useContext( CartContext );
 
+    const updateProductQuantity = ( product: ICartProduct, newQuantity: number ) => {
+        product.quantity = newQuantity;
+        updateCartQuantity(product);
+    }
     
     return (
         <>
             {
-                cart.map(({ image, price, _id, inStock, size, slug, title, quantity })=> (
-                    <Grid container spacing={ 2 } sx={{ mb: 1 }} key={ _id } >
+                cart.map(({ image, price, _id, inStock, size, slug, title, quantity }, index)=> (
+                    <Grid container spacing={ 2 } sx={{ mb: 1 }} key={ slug + size } >
 
                         <Grid item xs={ 3 } >
                             {/* TODO: LLevar a la pagina del producto */}
@@ -51,7 +56,7 @@ export const CartList: FC<Props> = ({ editable }) => {
                                         <ItemCounter 
                                             currentValue={ quantity } 
                                             maxValue={ inStock } 
-                                            onUpdateQuantity={() => {}}     
+                                            onUpdateQuantity={( value ) => updateProductQuantity(cart[index], value)}     
                                         />
                                     )
                                     : <Typography variant='h5' >{ quantity } { quantity > 1 ? 'productos' : 'producto' } </Typography>
@@ -66,7 +71,11 @@ export const CartList: FC<Props> = ({ editable }) => {
                             
                             {
                                 editable && (
-                                    <Button variant='text' color='secondary' >
+                                    <Button 
+                                        variant='text' 
+                                        color='secondary' 
+                                        onClick={() => removeCartProduct(cart[index])}
+                                    >
                                         Remove
                                     </Button>
                                 )
