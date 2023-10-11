@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '../../../database';
 import { IProduct } from '../../../interfaces/products';
-import { ProductModel } from '../../../models';
+import { Product } from '../../../models';
 
 type Data = 
 | { msg: string }
@@ -24,7 +24,7 @@ const getProductBySlug = async ( req: NextApiRequest, res: NextApiResponse<Data>
         
         await db.connect();
 
-        const product = await ProductModel.findOne({ slug }).lean();
+        const product = await Product.findOne({ slug }).lean();
 
         await db.disconnect();
 

@@ -1,5 +1,5 @@
 import { db } from ".";
-import { ProductModel } from "../models";
+import { Product } from "../models";
 import { IProduct } from "../interfaces";
 
 interface ProductSlug {
@@ -13,7 +13,7 @@ export const getProductsBySlug = async ( slug: string ): Promise<IProduct | null
         
         await db.connect();
 
-        const product = await ProductModel.findOne({ slug }).lean();
+        const product = await Product.findOne({ slug }).lean();
 
         await db.disconnect();
 
@@ -40,7 +40,7 @@ export const getAllProductsSlugs = async (): Promise<ProductSlug[]> => {
     
         await db.connect();
 
-        const slugs = await ProductModel.find().select('slug -_id').lean();
+        const slugs = await Product.find().select('slug -_id').lean();
 
         await db.disconnect();
 
@@ -63,7 +63,7 @@ export const getProductsByTerm = async ( term: string ): Promise<IProduct[]> => 
         
         await db.connect();
 
-        const products = await ProductModel.find({
+        const products = await Product.find({
             $text: { $search: term }
         })
         .select('title images price inStock slug -_id')
@@ -89,7 +89,7 @@ export const getAllProducts = async (): Promise<IProduct[]> => {
     
         await db.connect();
 
-        const products = ProductModel.find().lean();
+        const products = Product.find().lean();
 
         await db.disconnect();
 

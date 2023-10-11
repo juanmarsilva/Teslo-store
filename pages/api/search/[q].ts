@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '../../../database';
 import { IProduct } from '../../../interfaces/products';
-import { ProductModel } from '../../../models';
+import { Product } from '../../../models';
 
 type Data = 
 | { msg: string }
@@ -28,7 +28,7 @@ const searchProducts = async ( req: NextApiRequest, res: NextApiResponse<Data> )
         
         await db.connect();
 
-        const products = await ProductModel.find({ $text: { $search: q } }).select('title images price inStock slug -_id').lean();
+        const products = await Product.find({ $text: { $search: q } }).select('title images price inStock slug -_id').lean();
 
         await db.disconnect();
 

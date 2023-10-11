@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db, SHOP_CONSTANTS } from '../../../database';
-import { ProductModel } from '../../../models';
+import { Product } from '../../../models';
 import { IProduct } from '../../../interfaces/products';
 
 type Data = 
@@ -33,7 +33,7 @@ const getProducts = async ( req: NextApiRequest, res: NextApiResponse<Data> ) =>
 
         await db.connect();
 
-        const products = await ProductModel.find( condition )
+        const products = await Product.find( condition )
                                            .select('title images price inStock slug -_id')
                                            .lean();
 

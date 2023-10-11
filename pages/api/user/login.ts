@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '../../../database';
-import { UserModel } from '../../../models';
+import { User } from '../../../models';
 import bcrypt from 'bcryptjs';
 import { Jwt } from '../../../utils';
 
@@ -36,7 +36,7 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     await db.connect();
 
-    const user = await UserModel.findOne({ email });
+    const user = await User.findOne({ email });
 
     await db.disconnect();
 
