@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 
 import { db } from '../../../database';
 import { User } from '../../../models';
-import { Jwt } from '../../../utils';
+import { Jwt, Validations } from '../../../utils';
 
 type Data = 
 | { message: string }
@@ -17,7 +17,7 @@ type Data =
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
-    
+
     switch ( req.method ) {
         case 'POST':
             return registerUser(req, res);
@@ -41,7 +41,9 @@ const registerUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => 
         return res.status(400).json({ message: 'El nombre debe de ser de 2 caracteres o más' });
     }
 
-    //todo: validar email.
+    if(!Validations.isValidEmail( email )) {
+        return res.status(400).json({ message: 'El corro proporcionado no es válido' });
+    }
 
     await db.connect();
 
