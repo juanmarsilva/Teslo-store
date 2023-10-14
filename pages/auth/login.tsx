@@ -99,8 +99,6 @@ const LoginPage: NextPage = () => {
                                 helperText={ errors.password?.message }
                             />
                         </Grid>
-                                
-                        
                             
                         <Grid 
                             item 
