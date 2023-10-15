@@ -1,9 +1,13 @@
 import { FC, PropsWithChildren, useEffect, useReducer } from 'react'
+import { useRouter } from 'next/router';
+
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
 import { AuthContext, authReducer } from './'
+
 import { IUser } from '../../interfaces';
 import TesloApi from '../../api/tesloApi';
-import Cookies from 'js-cookie';
-import axios from 'axios';
 
 export interface AuthState {
     isLoggedIn: boolean;
@@ -19,6 +23,7 @@ const AUTH_INITIAL_STATE: AuthState = {
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const [state, dispatch] = useReducer( authReducer, AUTH_INITIAL_STATE );
+    const { reload } = useRouter();
 
     useEffect(() => {
         checkToken();
@@ -99,7 +104,13 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         }
 
 
-    }
+    };
+
+    const logOut = () => {
+        Cookies.remove('token');
+        Cookies.remove('cart');
+        reload();
+    };
 
 
     return (
@@ -108,7 +119,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
             // Methods
             loginUser,
-            registerUser
+            registerUser,
+            logOut,
         }}>
             { children }
         </AuthContext.Provider>

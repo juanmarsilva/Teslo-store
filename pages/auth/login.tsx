@@ -19,12 +19,14 @@ type FormData = {
 
 const LoginPage: NextPage = () => {
 
-    const { replace } = useRouter();
+    const { replace, query } = useRouter();
     
     const { loginUser } = useContext( AuthContext );
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
     const [showError, setShowError] = useState(false);
+
+    const destination = query.fromPage?.toString() || '/';
 
     const onLogin = async ({ email, password }: FormData) => {
 
@@ -35,9 +37,9 @@ const LoginPage: NextPage = () => {
         if( !isValidLogin ) {
             setShowError(true);
             return setTimeout(() => setShowError(false), 5000);
-        }
+        };
         
-        replace('/');
+        replace(destination);
     }
     
     return (
@@ -127,7 +129,11 @@ const LoginPage: NextPage = () => {
                         </Grid>
 
                         <Grid item xs={ 12 } display='flex' justifyContent='end' >
-                            <NextLink href='/auth/register' passHref legacyBehavior >
+                            <NextLink 
+                                href={`/auth/register?fromPage=${destination}`} 
+                                passHref 
+                                legacyBehavior 
+                            >
                                 <Link underline='always' >
                                     ¿No tienes una cuenta?
                                 </Link>

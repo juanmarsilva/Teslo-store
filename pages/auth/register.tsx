@@ -20,7 +20,7 @@ type FormData = {
 
 const RegisterPage: NextPage = () => {
 
-    const { replace } = useRouter();
+    const { replace, query } = useRouter();
     
     const { registerUser } = useContext( AuthContext );
 
@@ -28,6 +28,8 @@ const RegisterPage: NextPage = () => {
 
     const [showError, setShowError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+
+    const destination = query.fromPage?.toString() || '/';
 
     const onRegister = async ({ name, email, password }: FormData) => {
 
@@ -41,7 +43,7 @@ const RegisterPage: NextPage = () => {
             return setTimeout(() => setShowError(false), 5000);
         }
 
-        replace('/');
+        replace(destination);
     }
 
     return (
@@ -151,7 +153,11 @@ const RegisterPage: NextPage = () => {
                         </Grid>
 
                         <Grid item xs={ 12 } display='flex' justifyContent='end' >
-                            <NextLink href='/auth/login' passHref legacyBehavior >
+                            <NextLink 
+                                href={`/auth/login?fromPage=${destination}`} 
+                                passHref 
+                                legacyBehavior 
+                            >
                                 <Link underline='always' >
                                     ¿Ya tienes una cuenta?
                                 </Link>

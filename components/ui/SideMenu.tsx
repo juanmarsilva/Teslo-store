@@ -34,10 +34,10 @@ import { AuthContext, UIContext } from '../../context';
 
 export const SideMenu = () => {
 
-    const router = useRouter()
+    const { push, asPath } = useRouter()
 
     const { isSideMenuOpen, toogleSideMenu } = useContext( UIContext );
-    const { user, isLoggedIn } = useContext( AuthContext );
+    const { user, isLoggedIn, logOut } = useContext( AuthContext );
 
     const [ searchTerm, setSearchTerm ] = useState('');
 
@@ -49,8 +49,8 @@ export const SideMenu = () => {
 
     const navigateTo = ( url: string ) => {
         toogleSideMenu();
-        router.push( url );
-    }
+        push( url );
+    };
 
     return (
         <Drawer
@@ -136,7 +136,7 @@ export const SideMenu = () => {
                     {
                         !isLoggedIn
                         ?   (
-                            <ListItemButton>
+                            <ListItemButton onClick={() => navigateTo(`/auth/login?fromPage=${ asPath }`)} >
                                 <ListItemIcon>
                                     <VpnKeyOutlined/>
                                 </ListItemIcon>
@@ -144,7 +144,7 @@ export const SideMenu = () => {
                             </ListItemButton>
                         )
                         : (
-                            <ListItemButton>
+                            <ListItemButton onClick={logOut} >
                                 <ListItemIcon>
                                     <LoginOutlined/>
                                 </ListItemIcon>
