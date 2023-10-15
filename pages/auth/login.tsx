@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { NextPage } from 'next';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import { useForm } from "react-hook-form";
 
 import { Box, Button, Grid, TextField, Typography, Link, InputAdornment, Chip } from '@mui/material';
-import { AccountCircleOutlined, ErrorOutline, VisibilityOutlined } from '@mui/icons-material';
+import { ErrorOutline, MailOutline, VisibilityOutlined } from '@mui/icons-material';
 
 import { AuthLayout } from "../../components/layouts";
 import { Validations } from '../../utils';
-import { TesloApi } from '../../api';
+import { AuthContext } from '../../context';
 
 type FormData = {
     email: string,
@@ -17,28 +18,26 @@ type FormData = {
 
 
 const LoginPage: NextPage = () => {
+
+    const { replace } = useRouter();
     
+    const { loginUser } = useContext( AuthContext );
+
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
     const [showError, setShowError] = useState(false);
 
     const onLogin = async ({ email, password }: FormData) => {
-        
-        try {
 
-            const { data } = await TesloApi.post('/user/login', { email, password });
+        setShowError(false);
 
-            const { token, user } = data;
+        const isValidLogin = await loginUser( email, password );
 
-            console.log({ token, user });
-            
-        } catch(error) {
-            console.log('Error en las credenciales.');
+        if( !isValidLogin ) {
             setShowError(true);
-            setTimeout(() => setShowError(false), 5000);
+            return setTimeout(() => setShowError(false), 5000);
         }
-
-        // Todo: navegar a la pantalla donde se encontraba el usuario.
-
+        
+        replace('/');
     }
     
     return (
@@ -60,9 +59,9 @@ const LoginPage: NextPage = () => {
                                 fullWidth
                                 InputProps={{
                                     startAdornment: (
-                                    <InputAdornment position="start">
-                                        <AccountCircleOutlined color='primary' />
-                                    </InputAdornment>
+                                        <InputAdornment position="start">
+                                            <MailOutline color='primary' />
+                                        </InputAdornment>
                                     )
                                 }}
                                 { ...register('email', {
@@ -83,9 +82,9 @@ const LoginPage: NextPage = () => {
                                 fullWidth 
                                 InputProps={{
                                     endAdornment: (
-                                    <InputAdornment position="end">
-                                        <VisibilityOutlined color='primary' />
-                                    </InputAdornment>
+                                        <InputAdornment position="end">
+                                            <VisibilityOutlined color='primary' />
+                                        </InputAdornment>
                                     )
                                 }}
                                 { ...register('password', {

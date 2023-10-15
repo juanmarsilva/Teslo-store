@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { NextPage } from 'next';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 
 import { useForm } from 'react-hook-form';
-import { Box, Button, Grid, TextField, Typography, Link, Chip } from '@mui/material';
-import { ErrorOutline } from '@mui/icons-material';
+import { Box, Button, Grid, TextField, Typography, Link, Chip, InputAdornment } from '@mui/material';
+import { AccountCircleOutlined, ErrorOutline, VisibilityOutlined, MailOutline } from '@mui/icons-material';
 
 import { AuthLayout } from "../../components/layouts";
+import { AuthContext } from '../../context';
 import { Validations } from '../../utils';
-import { TesloApi } from '../../api';
 
 type FormData = {
     name: string,
@@ -18,24 +19,29 @@ type FormData = {
 
 
 const RegisterPage: NextPage = () => {
+
+    const { replace } = useRouter();
     
+    const { registerUser } = useContext( AuthContext );
+
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+
     const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const onRegister = async ({ name, email, password }: FormData) => {
-        try {
 
-            const { data } = await TesloApi.post('/user/register', { name, email, password });
+        setShowError(false);
 
-            const { token, user } = data;
+        const { hasError, message } = await registerUser( name, email, password );
 
-            console.log({ token, user });
-
-        } catch(error) {
-            console.log('Error en las credenciales.');
+        if( hasError ) {
             setShowError(true);
-            setTimeout(() => setShowError(false), 5000);
+            setErrorMessage( message! );
+            return setTimeout(() => setShowError(false), 5000);
         }
+
+        replace('/');
     }
 
     return (
@@ -53,6 +59,13 @@ const RegisterPage: NextPage = () => {
                                 label='Nombre completo' 
                                 variant='outlined' 
                                 fullWidth
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <AccountCircleOutlined color='primary' />
+                                        </InputAdornment>
+                                    )
+                                }}
                                 {  ...register('name', {
                                     required: 'Este campo es requerido',
                                     minLength: {
@@ -69,7 +82,14 @@ const RegisterPage: NextPage = () => {
                             <TextField 
                                 label='Correo' 
                                 variant='outlined' 
-                                fullWidth 
+                                fullWidth
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <MailOutline color='primary' />
+                                        </InputAdornment>
+                                    )
+                                }}
                                 {  ...register('email', {
                                     required: 'Este campo es requerido',
                                     validate: Validations.isEmail,
@@ -84,7 +104,14 @@ const RegisterPage: NextPage = () => {
                                 label='Contraseña' 
                                 type='password' 
                                 variant='outlined' 
-                                fullWidth 
+                                fullWidth
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <VisibilityOutlined color='primary' />
+                                        </InputAdornment>
+                                    )
+                                }}
                                 {  ...register('password', {
                                     required: 'Este campo es requerido',
                                     minLength: {
