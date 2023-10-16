@@ -22,6 +22,7 @@ export const cartReducer = ( state: CartState, { type, payload }: CartActionType
     if( type === '[CART] - LOAD CART FROM COOKIES | LOCALSTORAGE' ) {
         return {
            ...state,
+           isLoaded: true,
            cart: [ ...payload ],
         }
     }

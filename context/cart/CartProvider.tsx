@@ -4,6 +4,7 @@ import { CartContext, cartReducer } from './';
 import Cookie from 'js-cookie';
 
 export interface CartState {
+    isLoaded: boolean;
     cart: ICartProduct[];
     numberOfItems: number;
     subtotal: number;
@@ -14,6 +15,7 @@ export interface CartState {
 interface Props extends PropsWithChildren {}
 
 const CART_INITIAL_STATE: CartState = {
+    isLoaded: false,
     cart: [],
     numberOfItems: 0,
     subtotal: 0,

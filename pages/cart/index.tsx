@@ -1,13 +1,29 @@
 
-import { Card, CardContent, Divider, Grid, Typography, Button, Box } from '@mui/material';
+import { useContext, useEffect } from 'react';
 import { NextPage } from 'next';
-import { ShopLayout } from '../../components/layouts';
-import { CartList, OrdenSummary } from '../../components/cart';
+import { useRouter } from 'next/router';
+
+import { Card, CardContent, Divider, Grid, Typography, Button, Box, CircularProgress } from '@mui/material';
+
+import { ShopLayout, CartList, OrdenSummary } from '../../components/';
+import { CartContext } from '../../context';
 
 const ShoppingCartPage: NextPage = () => {
+
+    const { isLoaded, cart } = useContext( CartContext );
+    const { replace } = useRouter();
+
+    useEffect(() => {
+        if(isLoaded && cart.length === 0) {
+            replace('/cart/empty');
+        }
+    }, [isLoaded, cart, replace]);
+    
+    if( !isLoaded || cart.length === 0 ) return <></>;
+
     return (
         <ShopLayout title='Carrito de compras' pageDescription='Carrito de compras' >
-            
+          
             <Typography variant='h1' component='h1'> Carrito de compras </Typography>
 
             <Grid container >
@@ -30,7 +46,12 @@ const ShoppingCartPage: NextPage = () => {
                             <OrdenSummary />
 
                             <Box sx={{ mt: 3 }}>
-                                <Button color='secondary' className='circular-btn' fullWidth >
+                                <Button 
+                                    color='secondary'
+                                    className='circular-btn'
+                                    fullWidth
+                                    href='/checkout/address'
+                                >
                                     Chekout
                                 </Button>
                             </Box>
