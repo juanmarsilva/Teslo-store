@@ -1,10 +1,30 @@
+import { useContext, useMemo } from 'react';
 import { NextPage } from 'next';
-import NextLink from 'next/link'
+import NextLink from 'next/link';
+
 import { Box, Card, CardContent, Divider, Grid, Typography, Button, Link } from '@mui/material';
-import { ShopLayout } from '../../components/layouts';
-import { CartList, OrdenSummary } from '../../components/cart';
+
+import { ShopLayout, CartList, OrdenSummary } from '../../components/';
+import { CartContext } from '../../context';
+import { countries } from '../../utils';
 
 const SummaryPage: NextPage = () => {
+
+    const { shippingAddress, numberOfItems } = useContext( CartContext );
+
+    if( !shippingAddress ) return <></>;
+
+    const {
+        firstName,
+        lastName,
+        address,    
+        address2,
+        country, 
+        province,   
+        city,
+        phone,      
+    } = shippingAddress;
+
     return (
         <ShopLayout title='Order summary' pageDescription='Order summary' >
             
@@ -23,12 +43,15 @@ const SummaryPage: NextPage = () => {
 
                         <CardContent>
 
-                            <Typography variant='h2' > Summary: (3 products ) </Typography>
+                            <Typography variant='h2' > 
+                                Summary: ({numberOfItems} { numberOfItems > 1 ? 'products' : 'product' }) 
+                            </Typography>
 
                             <Divider sx={{ my: 1 }} />
 
                             <Box display='flex' justifyContent='space-between' >
                                 <Typography variant='subtitle1'> Delivery address </Typography>
+
                                 <NextLink href='/checkout/address' passHref legacyBehavior >
                                     <Link underline='always' >
                                         Edit
@@ -36,11 +59,15 @@ const SummaryPage: NextPage = () => {
                                 </NextLink>
                             </Box>
 
-                            <Typography> Juan Martin Silva </Typography>
-                            <Typography> 31 - 803 </Typography>
-                            <Typography> Mercedes, Buenos Aires </Typography>
-                            <Typography> Argentina </Typography>
-                            <Typography> +54 9 2324 498482 </Typography>
+                            <Typography> { firstName } { lastName } </Typography>               
+                                
+                            <Typography> { address }{ address2 ? `, ${address2}` : '' } </Typography>
+
+                            <Typography> { city }, { province } </Typography>
+
+                            <Typography> { countries.find(c => c.code === country)?.name } </Typography>
+
+                            <Typography> { phone } </Typography>
 
                             <Divider sx={{ my: 1 }} />
 

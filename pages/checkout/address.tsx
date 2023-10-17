@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
@@ -47,7 +47,8 @@ const getAdressFromCookies = (): FormData => ({
 
 const AddressPage: NextPage = () => {
     const { push } = useRouter();
-    const { updateShippingAddress } = useContext( CartContext )
+    const { updateShippingAddress } = useContext( CartContext );
+    const [countryValue, setCountryValue] = useState('')
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         defaultValues: getAdressFromCookies(),
@@ -57,6 +58,12 @@ const AddressPage: NextPage = () => {
         updateShippingAddress( data );
         push('/checkout/summary');
     };
+
+    useEffect(() => {
+        if( Cookies.get('country') ) {
+            setCountryValue( Cookies.get('country')! );
+        }
+    }, [])
 
     return (
         <ShopLayout title='Direction' pageDescription='Confirm destiny direction' >
@@ -133,6 +140,7 @@ const AddressPage: NextPage = () => {
                         <FormControl fullWidth >
 
                             <TextField
+                                key={countryValue}
                                 select
                                 variant='outlined'
                                 label='Country'
@@ -141,6 +149,7 @@ const AddressPage: NextPage = () => {
                                 }) }
                                 error={ !!errors.country }
                                 helperText={ errors.country?.message }
+                                defaultValue={countryValue}
                             >
                                 {
                                     countries.map(({ name, code }) => 

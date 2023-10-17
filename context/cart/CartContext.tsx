@@ -5,12 +5,12 @@ import { ShippingAddress } from './';
 
 
 interface ContextProps {
-    isLoaded:           boolean;
-    cart:               ICartProduct[];
-    numberOfItems:      number;
-    subtotal:           number;
-    tax:                number;
-    total:              number;
+    isLoaded:            boolean;
+    cart:                ICartProduct[];
+    numberOfItems:       number;
+    subtotal:            number;
+    tax:                 number;
+    total:               number;
 
     shippingAddress?:    ShippingAddress;
 
