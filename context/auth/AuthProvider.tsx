@@ -1,5 +1,6 @@
 import { FC, PropsWithChildren, useEffect, useReducer } from 'react'
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -23,28 +24,38 @@ const AUTH_INITIAL_STATE: AuthState = {
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
     const [state, dispatch] = useReducer( authReducer, AUTH_INITIAL_STATE );
+    const { data, status } = useSession();
     const { reload } = useRouter();
 
     useEffect(() => {
-        checkToken();
-    }, []);
+        if( status === 'authenticated' ) {
+            // dispatch({ type: '[AUTH] - LOGIN', payload: data.user as IUser })
+            console.log({ user: data.user });
+            
+        } 
+    }, [status, data?.user])
+    
 
-    const checkToken = async () => {
+    // useEffect(() => {
+    //     checkToken();
+    // }, []);
 
-        if( !Cookies.get('token') ) return;
+    // const checkToken = async () => {
 
-        try {
-            const  { data } = await TesloApi.get('/user/validate-token');
+    //     if( !Cookies.get('token') ) return;
 
-            const { token, user } = data;
+    //     try {
+    //         const  { data } = await TesloApi.get('/user/validate-token');
 
-            Cookies.set('token', token);
+    //         const { token, user } = data;
 
-            dispatch({ type: '[AUTH] - LOGIN', payload: user });
-        } catch(error) {
-            Cookies.remove('token');
-        }
-    };
+    //         Cookies.set('token', token);
+
+    //         dispatch({ type: '[AUTH] - LOGIN', payload: user });
+    //     } catch(error) {
+    //         Cookies.remove('token');
+    //     }
+    // };
     
     const loginUser = async (email: string, password: string): Promise<boolean> => {
         
