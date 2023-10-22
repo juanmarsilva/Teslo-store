@@ -48,6 +48,18 @@ export const authOptions: AuthOptions = {
         })
     ],
 
+    // Custom Pages
+    pages: {
+        signIn: '/auth/login',
+        newUser: '/auth/register',
+    },
+
+    session: {
+        maxAge: 259200, // 30 dias
+        strategy: 'jwt',
+        updateAge: 86400 // cada dia se actualiza.
+    },
+
     // Callbacks
     callbacks: {
 

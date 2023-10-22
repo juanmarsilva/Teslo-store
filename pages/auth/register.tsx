@@ -1,7 +1,8 @@
 import { useContext, useState } from 'react';
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import { getSession, signIn } from 'next-auth/react';
 
 import { useForm } from 'react-hook-form';
 import { Box, Button, Grid, TextField, Typography, Link, Chip, InputAdornment } from '@mui/material';
@@ -11,6 +12,15 @@ import { AuthLayout } from "../../components/layouts";
 import { AuthContext } from '../../context';
 import { Validations } from '../../utils';
 
+/**
+ * The above type represents the form data with fields for name, email, and password, all of which are
+ * strings.
+ * @property {string} name - A string representing the name of the user.
+ * @property {string} email - The `email` property is a string that represents the email address of the
+ * user.
+ * @property {string} password - The `password` property in the `FormData` type represents a string
+ * value that is used to store a user's password.
+ */
 type FormData = {
     name: string,
     email: string,
@@ -18,9 +28,14 @@ type FormData = {
 };
 
 
+/* The above code is a TypeScript React component for a registration page. It uses Next.js for routing
+and useContext and useForm hooks from React to handle form submission and validation. The component
+renders a form with input fields for name, email, and password. It also includes error handling for
+displaying error messages and redirects the user to a specified destination after successful
+registration. */
 const RegisterPage: NextPage = () => {
 
-    const { replace, query } = useRouter();
+    const { query } = useRouter();
     
     const { registerUser } = useContext( AuthContext );
 
@@ -43,7 +58,7 @@ const RegisterPage: NextPage = () => {
             return setTimeout(() => setShowError(false), 5000);
         }
 
-        replace(destination);
+        await signIn('credentials', { email, password });
     }
 
     return (
@@ -169,6 +184,35 @@ const RegisterPage: NextPage = () => {
             </form>
         </AuthLayout>
     )
+};
+
+/**
+ * This function checks if a user is logged in and redirects them to a specified page if they are,
+ * otherwise it returns an empty object.
+ * @param  - - `req`: The incoming HTTP request object.
+ * @returns The code is returning an object with either a "redirect" property or a "props" property. If
+ * the "session" variable is truthy, it will return a "redirect" object with the "destination" set to
+ * the value of "fromPage" and "permanent" set to false. If the "session" variable is falsy, it will
+ * return a "props" object with an
+ */
+export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+    
+    const session = await getSession({ req });
+
+    const { fromPage = '/' } = query;
+
+    if( session ) {
+        return {
+            redirect: {
+                destination: fromPage.toString(),
+                permanent: false,
+            }
+        }
+    }
+
+    return {
+        props: {}
+    }
 }
 
 export default RegisterPage;

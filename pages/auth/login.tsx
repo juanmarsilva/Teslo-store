@@ -1,46 +1,60 @@
-import { useContext, useState } from 'react';
-import { NextPage } from 'next';
+import { useEffect, useState } from 'react';
+import { NextPage, GetServerSideProps } from 'next';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { useForm } from "react-hook-form";
+import { getSession, signIn, getProviders } from 'next-auth/react';
 
-import { Box, Button, Grid, TextField, Typography, Link, InputAdornment, Chip } from '@mui/material';
+import { Box, Button, Grid, TextField, Typography, Link, InputAdornment, Chip, Divider } from '@mui/material';
 import { ErrorOutline, MailOutline, VisibilityOutlined } from '@mui/icons-material';
+import { useForm } from "react-hook-form";
 
 import { AuthLayout } from "../../components/layouts";
 import { Validations } from '../../utils';
-import { AuthContext } from '../../context';
 
+/**
+ * The type `FormData` represents an object with properties `email` and `password`, both of which are
+ * of type `string`.
+ * @property {string} email - A string representing the email address of a user.
+ * @property {string} password - The `password` property is a string that represents the user's
+ * password.
+ */
 type FormData = {
     email: string,
     password: string,
 };
 
 
+
+/* The code is defining a functional component called `LoginPage` using the `NextPage` type from
+Next.js. */
 const LoginPage: NextPage = () => {
 
-    const { replace, query } = useRouter();
-    
-    const { loginUser } = useContext( AuthContext );
+    const { query } = useRouter();
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
     const [showError, setShowError] = useState(false);
+    const [providers, setProviders] = useState<any>({});
 
     const destination = query.fromPage?.toString() || '/';
 
-    const onLogin = async ({ email, password }: FormData) => {
 
+    /**
+        * The function `onLogin` is an asynchronous function that takes in an object with `email` and
+        * `password` properties, and it calls the `signIn` function with the provided credentials.
+        * @param {FormData}  - The `onLogin` function takes in an object with two properties: `email` and
+        * `password`. These properties are of type `FormData`.
+    */
+    const onLogin = async ({ email, password }: FormData) => {
         setShowError(false);
 
-        const isValidLogin = await loginUser( email, password );
+        await signIn('credentials', { email, password });
+    };
 
-        if( !isValidLogin ) {
-            setShowError(true);
-            return setTimeout(() => setShowError(false), 5000);
-        };
-        
-        replace(destination);
-    }
+    useEffect(() => {
+        getProviders()
+            .then( prov => setProviders(prov) )
+            .catch( error => console.log(error) );
+    }, [])
     
     return (
         <AuthLayout title='Ingresar' >
@@ -140,11 +154,74 @@ const LoginPage: NextPage = () => {
                             </NextLink>
                         </Grid>
 
+                        <Grid 
+                            item 
+                            xs={ 12 } 
+                            display='flex' 
+                            flexDirection='column' 
+                            justifyContent='end' 
+                        >
+                            <Divider sx={{ width: '100%', mb: 2 }} />
+
+                            {
+                                Object.values(providers).map(({ name, id }: any) => {
+
+                                    if( id === 'credentials' ) return (<div key={id} ></div>);
+
+                                    return (
+                                        <Button
+                                            key={ id }
+                                            variant='outlined'
+                                            fullWidth
+                                            color='primary'
+                                            sx={{ mb: 1 }}
+                                            onClick={() => signIn(id)}
+                                        >
+                                            { name }
+                                        </Button>
+                                    )
+
+
+                                })
+                            }
+                        </Grid>
+
                     </Grid>
                 </Box>
             </form>
         </AuthLayout>
     )
+};
+
+
+
+/**
+ * This function checks if a user is logged in and redirects them to a specified page if they are,
+ * otherwise it returns an empty object.
+ * @param  - - `req`: The incoming HTTP request object.
+ * @returns The code is returning an object with either a "redirect" property or a "props" property. If
+ * the "session" variable is truthy, it will return a "redirect" object with the "destination" set to
+ * the value of "fromPage" and "permanent" set to false. If the "session" variable is falsy, it will
+ * return a "props" object with an
+ */
+export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+    
+    const session = await getSession({ req });
+
+    const { fromPage = '/' } = query;
+
+    if( session ) {
+        return {
+            redirect: {
+                destination: fromPage.toString(),
+                permanent: false,
+            }
+        }
+    }
+
+    return {
+        props: {}
+    }
 }
 
 export default LoginPage;
