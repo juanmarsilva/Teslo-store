@@ -9,16 +9,22 @@ import { AuthContext, authReducer } from './'
 import { IUser } from '../../interfaces';
 import TesloApi from '../../api/tesloApi';
 
+
+/* The `export interface AuthState` is defining the shape of the authentication state object used in
+the `AuthProvider` component. It specifies that the `AuthState` object should have two properties: */
 export interface AuthState {
     isLoggedIn: boolean;
     user?: IUser;
 }
 
+/* `const AUTH_INITIAL_STATE: AuthState = {
+    isLoggedIn: false,
+    user: undefined,
+}` is initializing the initial state for the authentication context. */
 const AUTH_INITIAL_STATE: AuthState = {
     isLoggedIn: false,
     user: undefined,
 }
-
 
 /**
  * The `AuthProvider` component is a TypeScript React component that provides authentication
@@ -123,11 +129,11 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
     };
 
+    
     /**
-    * The function `logOut` removes specific cookies and calls the `signOut` function.
-    */
+     * The function `logOut` removes specific cookies and calls the `signOut` function.
+     */
     const logOut = () => {
-        Cookies.remove('cart');
         Cookies.remove('firstName');
         Cookies.remove('lastName',);
         Cookies.remove('address');
