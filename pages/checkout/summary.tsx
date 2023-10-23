@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useEffect } from 'react';
 import { NextPage } from 'next';
 import NextLink from 'next/link';
 
@@ -7,10 +7,19 @@ import { Box, Card, CardContent, Divider, Grid, Typography, Button, Link } from 
 import { ShopLayout, CartList, OrdenSummary } from '../../components/';
 import { CartContext } from '../../context';
 import { countries } from '../../utils';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
 
+/* The code defines a functional component called `SummaryPage` which is a Next.js page component. It
+imports necessary dependencies from various libraries and components. */
 const SummaryPage: NextPage = () => {
 
     const { shippingAddress, numberOfItems } = useContext( CartContext );
+    const { push } = useRouter();
+
+    useEffect(() => {
+        if(!Cookies.get('firstName')) push('/checkout/address');
+    }, [push])
 
     if( !shippingAddress ) return <></>;
 
@@ -25,6 +34,7 @@ const SummaryPage: NextPage = () => {
         phone,      
     } = shippingAddress;
 
+    
     return (
         <ShopLayout title='Order summary' pageDescription='Order summary' >
             
