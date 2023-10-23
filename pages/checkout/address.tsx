@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from 'react';
-import { NextPage } from 'next';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import { useForm } from 'react-hook-form';
@@ -18,8 +18,26 @@ import {
 import { ShopLayout } from '../../components';
 import { countries } from '../../utils';
 import { CartContext } from '../../context';
+import { getSession } from 'next-auth/react';
 
 
+/**
+ * The above code defines a TypeScript interface `FormData` and a function `getAddressFromCookies` that
+ * retrieves address information from cookies and returns it as a `FormData` object.
+ * @property {string} firstName - The first name of the person.
+ * @property {string} lastName - The `lastName` property represents the last name of the person.
+ * @property {string} address - The `address` property in the `FormData` object represents the street
+ * address of the user.
+ * @property {string} address2 - The `address2` property is an optional property in the `FormData`
+ * object. It represents an additional address line, such as an apartment number or suite number.
+ * @property {string} zipCode - A string representing the zip code of the address.
+ * @property {string} country - The `country` property represents the country of the address.
+ * @property {string} province - The `province` property in the `FormData` object represents the
+ * province or state of the address.
+ * @property {string} city - The `city` property represents the city of the address.
+ * @property {string} phone - The `phone` property in the `FormData` object represents the phone number
+ * associated with the address.
+ */
 type FormData = {
     firstName:  string;
     lastName:   string;
@@ -32,6 +50,10 @@ type FormData = {
     phone:      string;
 };
 
+/**
+ * The function `getAddressFromCookies` retrieves address information from cookies and returns it as a
+ * `FormData` object.
+ */
 const getAdressFromCookies = (): FormData => ({
     firstName: Cookies.get('firstName') || '', 
     lastName: Cookies.get('lastName') || '',  
@@ -45,6 +67,8 @@ const getAdressFromCookies = (): FormData => ({
 });
     
 
+/* The above code is a TypeScript React component for an address page in a shopping application. It
+allows users to enter their shipping address information. */
 const AddressPage: NextPage = () => {
     const { push } = useRouter();
     const { updateShippingAddress } = useContext( CartContext );
@@ -54,16 +78,16 @@ const AddressPage: NextPage = () => {
         defaultValues: getAdressFromCookies(),
     });
 
-    const onSubmit = (data: FormData) => {
+    const onSubmit = useCallback((data: FormData) => {
         updateShippingAddress( data );
         push('/checkout/summary');
-    };
+    }, [push, updateShippingAddress]);
 
     useEffect(() => {
         if( Cookies.get('country') ) {
             setCountryValue( Cookies.get('country')! );
-        }
-    }, [])
+        };
+    }, []);
 
     return (
         <ShopLayout title='Direction' pageDescription='Confirm destiny direction' >
@@ -218,35 +242,32 @@ const AddressPage: NextPage = () => {
     )
 }
 
-// You should use getServerSideProps when:
-// - Only if you need to pre-render a page whose data must be fetched at request time
-// export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
-//     const { token = '' } = req.cookies;
-//     let isValidToken = false;
+/**
+ * The above function is a server-side function in a TypeScript React application that checks if a user
+ * is authenticated and redirects them to the login page if they are not.
+ * @param  - - `getServerSideProps`: This is a function that is used in Next.js to fetch data on the
+ * server side before rendering a page. It is a special function that is exported from a page component
+ * and is executed on the server side.
+ * @returns The code is returning an object with the property `redirect` if there is no session. If
+ * there is a session, it returns an object with an empty `props` property.
+ */
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
-//     try {
-//         await Jwt.isValidToken( token );
+    const session = await getSession({ req });
 
-//         isValidToken = true;
-//     } catch (error) {
-//         isValidToken = false;
-//     }
+    if( !session ) {
+        return {
+            redirect: {
+                destination: '/auth/login?fromPage=/checkout/address',
+                permanent: false,
+            }
+        };
+    }
 
-//     if( !isValidToken ) {
-//         return {
-//             redirect: {
-//                 destination: '/auth/login?fromPage=/checkout/address',
-//                 permanent: false,
-//             }
-//         };
-//     };
-
-//     return {
-//         props: {
-            
-//         }
-//     }
-// }
+    return {
+        props: {}
+    }
+}
 
 export default AddressPage;
