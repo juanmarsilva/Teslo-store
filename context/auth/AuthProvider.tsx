@@ -40,9 +40,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     useEffect(() => {
         if( status === 'authenticated' ) {
             dispatch({ type: '[AUTH] - LOGIN', payload: data.user as IUser })
-            
         } 
-    }, [status, data?.user])
+    }, [status, data?.user]);
     
     /**
      * The function loginUser is an asynchronous function that takes an email and password as

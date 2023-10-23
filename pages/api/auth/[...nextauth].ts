@@ -1,8 +1,13 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+
 import { dbUsers } from "../../../database";
 
+/* The `declare module "next-auth"` block is used to extend the types and interfaces provided by the
+NextAuth library. In this specific case, it is adding two additional properties to the existing
+`Session` and `User` interfaces. */
 declare module "next-auth" {
     interface Session {
       accessToken?: string;
@@ -14,12 +19,19 @@ declare module "next-auth" {
     }
 } 
 
+/* The `authOptions` object is a configuration object for NextAuth. It specifies the authentication
+providers, custom pages, session settings, and callbacks for the authentication process. */
 export const authOptions: AuthOptions = {
     // Configure one or more authentication providers
     providers: [
         GithubProvider({
             clientId: process.env.GITHUB_ID || '',
             clientSecret: process.env.GITHUB_SECRET || '',
+        }),
+
+        GoogleProvider({
+            clientId: process.env.GOOGLE_ID || '',
+            clientSecret: process.env.GOOGLE_SECRET || '',
         }),
         // ...add more providers here
 
