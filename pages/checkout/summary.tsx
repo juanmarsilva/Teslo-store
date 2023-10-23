@@ -1,14 +1,24 @@
 import { useContext, useEffect } from 'react';
 import { NextPage } from 'next';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 
-import { Box, Card, CardContent, Divider, Grid, Typography, Button, Link } from '@mui/material';
+import Cookies from 'js-cookie';
+
+import { 
+    Box, 
+    Card, 
+    CardContent, 
+    Divider, 
+    Grid, 
+    Typography, 
+    Button, 
+    Link,
+} from '@mui/material';
 
 import { ShopLayout, CartList, OrdenSummary } from '../../components/';
 import { CartContext } from '../../context';
 import { countries } from '../../utils';
-import Cookies from 'js-cookie';
-import { useRouter } from 'next/router';
 
 /* The code defines a functional component called `SummaryPage` which is a Next.js page component. It
 imports necessary dependencies from various libraries and components. */
