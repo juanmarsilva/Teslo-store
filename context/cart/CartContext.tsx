@@ -1,9 +1,10 @@
 import { createContext } from 'react';
 
-import { ICartProduct } from '../../interfaces';
-import { ShippingAddress } from './';
+import { ICartProduct, ShippingAddress } from '../../interfaces';
 
-
+/* The `ContextProps` interface defines the shape of the context object that will be provided by the
+`CartContext` context. It specifies the properties and methods that will be available to components
+that consume this context. */
 interface ContextProps {
     isLoaded:            boolean;
     cart:                ICartProduct[];

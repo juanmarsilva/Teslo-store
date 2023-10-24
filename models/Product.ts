@@ -1,6 +1,7 @@
 import mongoose, { Schema, model, Model } from 'mongoose';
 import { IProduct } from '../interfaces';
 
+/* The code is defining a Mongoose schema for a product. */
 const productSchema = new Schema({
     description: { type: String, required: true },
     images: [{ type: String }],
@@ -35,7 +36,8 @@ const productSchema = new Schema({
 });
 
 
-// TODO: Crear indice de Mongo.
+/* `productSchema.index({ title: 'text', tags: 'text' });` is creating a text index on the `title` and
+`tags` fields of the `productSchema`. */
 productSchema.index({ title: 'text', tags: 'text' });
 
 const ProductModel: Model<IProduct> = mongoose.models.Product || mongoose.model( 'Product', productSchema );

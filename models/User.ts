@@ -2,6 +2,7 @@ import mongoose, { Schema, model, Model } from "mongoose";
 
 import { IUser } from "../interfaces";
 
+/* The code is defining a Mongoose schema for a user. */
 const userSchema = new Schema({
 
     name: { type: String, required: true },

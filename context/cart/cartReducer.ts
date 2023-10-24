@@ -1,5 +1,5 @@
-import { CartState, ShippingAddress } from './';
-import { ICartProduct } from '../../interfaces';
+import { CartState } from './';
+import { ICartProduct, ShippingAddress } from '../../interfaces';
 
 type CartActionType =
 | { type: '[CART] - LOAD CART FROM COOKIES | LOCALSTORAGE', payload: ICartProduct[] }
@@ -19,6 +19,15 @@ type CartActionType =
 }
 
 
+/**
+ * The `cartReducer` function is a TypeScript reducer that handles various actions related to updating
+ * the state of a shopping cart.
+ * @param {CartState} state - The current state of the cart, which includes properties such as
+ * `isLoaded`, `cart`, and `shippingAddress`.
+ * @param {CartActionType}  - - `state`: The current state of the cart.
+ * @returns The cartReducer function returns the updated state of the cart based on the action type and
+ * payload provided.
+ */
 export const cartReducer = ( state: CartState, { type, payload }: CartActionType ): CartState => {
 
     if( type === '[CART] - LOAD CART FROM COOKIES | LOCALSTORAGE' ) {

@@ -1,21 +1,11 @@
 import { FC, PropsWithChildren, useEffect, useReducer, useRef } from 'react';
 import Cookie from 'js-cookie';
 
-import { ICartProduct } from '../../interfaces';
+import { ICartProduct, ShippingAddress } from '../../interfaces';
 import { CartContext, cartReducer } from './';
 
-export interface ShippingAddress {
-    firstName:  string;
-    lastName:   string;
-    address:    string;
-    address2?:  string;
-    zipCode:    string;
-    country:    string;
-    province:   string;
-    city:       string;
-    phone:      string;
-}
-
+/* The `CartState` interface defines the shape of the state object used in the `CartProvider`
+component. It includes the following properties: */
 export interface CartState {
     isLoaded:           boolean;
     cart:               ICartProduct[];
@@ -28,6 +18,9 @@ export interface CartState {
 
 interface Props extends PropsWithChildren {}
 
+/* `const CART_INITIAL_STATE` is a constant variable that initializes the initial state for the
+`CartProvider` component. It is of type `CartState`, which is an interface defining the shape of the
+state object used in the `CartProvider` component. */
 const CART_INITIAL_STATE: CartState = {
     isLoaded: false,
     cart: [],
@@ -38,12 +31,20 @@ const CART_INITIAL_STATE: CartState = {
     shippingAddress: undefined,
 }
 
+/**
+ * The `CartProvider` component is a context provider that manages the state and actions related to a
+ * shopping cart.
+ * @param  - - `Props`: The type definition for the props passed to the `CartProvider` component.
+ * @returns The `CartProvider` component is being returned.
+ */
 export const CartProvider: FC<Props> = ({ children }) => {
 
     const [ state, dispatch ] = useReducer( cartReducer, CART_INITIAL_STATE );
 
     const isReloading = useRef(true);
 
+    /*In this case, the `useEffect` hook is used to load the shipping address from cookies or local storage when the
+    component mounts. */
     useEffect(() => {
         if( Cookie.get('firstName') ) {
             const shippingAddress = {
@@ -62,6 +63,8 @@ export const CartProvider: FC<Props> = ({ children }) => {
         }
     }, [])
     
+    /* The `useEffect` hook is used to load the cart from cookies or local storage when the component
+    mounts. */
     useEffect(() => {
         try {
             const cookieProducts = Cookie.get('cart') ? JSON.parse( Cookie.get('cart')! ) : [];
@@ -71,6 +74,8 @@ export const CartProvider: FC<Props> = ({ children }) => {
         }
     }, []);
 
+   /* The `useEffect` hook is used to save the cart to cookies or local storage whenever the
+   `state.cart` value changes. */
     useEffect(() => {
         if( isReloading.current ) {
             isReloading.current = false;
@@ -79,6 +84,8 @@ export const CartProvider: FC<Props> = ({ children }) => {
         }
     }, [state.cart]);
 
+    /* The `useEffect` hook in the provided code is used to update the order summary whenever the
+    `state.cart` value changes. */
     useEffect(() => {
 
         const numberOfItems = state.cart.reduce((prevValue, current) => current.quantity + prevValue, 0);
@@ -99,6 +106,15 @@ export const CartProvider: FC<Props> = ({ children }) => {
     }, [state.cart]);
 
 
+    /**
+     * The function `addProduct` checks if a product is already in the cart, and if not, adds it to the
+     * cart; if the product is already in the cart but with a different size, it adds it to the cart;
+     * and if the product is already in the cart with the same size, it updates the quantity of the
+     * product in the cart.
+     * @param {ICartProduct} product - The `product` parameter is an object of type `ICartProduct`.
+     * @returns a dispatch action with the type '[CART] - UPDATE PRODUCTS IN CART' and the payload
+     * containing the updated products.
+     */
     const addProduct = ( product: ICartProduct ) => {
 
         const isProductInCart = state.cart.some( p => p._id === product._id );
@@ -127,6 +143,11 @@ export const CartProvider: FC<Props> = ({ children }) => {
 
     }
 
+    /**
+     * The function updates the quantity of a product in the cart.
+     * @param {ICartProduct} product - The `product` parameter is an object of type `ICartProduct`. It
+     * represents a product that needs to be updated in the cart.
+     */
     const updateCartQuantity = ( product: ICartProduct ) => dispatch(
         { 
             type: '[CART] - UPDATE PRODUCTS QUANTITY IN CART', 
@@ -135,6 +156,12 @@ export const CartProvider: FC<Props> = ({ children }) => {
     );
     
 
+    /**
+     * The function `removeCartProduct` is used to dispatch an action to remove a product from the
+     * cart.
+     * @param {ICartProduct} product - The `product` parameter is of type `ICartProduct`, which
+     * represents a product in the cart.
+     */
     const removeCartProduct = ( product: ICartProduct ) => dispatch(
         { 
             type: '[CART] - REMOVE PRODUCT IN CART',
@@ -142,6 +169,12 @@ export const CartProvider: FC<Props> = ({ children }) => {
         }
     );
 
+    /**
+     * The function updates the shipping address and dispatches an action to update the address in the
+     * cart.
+     * @param {ShippingAddress} address - The `address` parameter is an object of type
+     * `ShippingAddress` which contains the following properties:
+     */
     const updateShippingAddress = ( address: ShippingAddress ) => {
         Cookie.set('firstName', address.firstName);
         Cookie.set('lastName', address.lastName);
