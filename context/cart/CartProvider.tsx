@@ -1,8 +1,9 @@
 import { FC, PropsWithChildren, useEffect, useReducer, useRef } from 'react';
 import Cookie from 'js-cookie';
 
-import { ICartProduct, ShippingAddress } from '../../interfaces';
+import { ICartProduct, IOrder, ShippingAddress } from '../../interfaces';
 import { CartContext, cartReducer } from './';
+import { TesloApi } from '../../api';
 
 /* The `CartState` interface defines the shape of the state object used in the `CartProvider`
 component. It includes the following properties: */
@@ -189,17 +190,44 @@ export const CartProvider: FC<Props> = ({ children }) => {
         dispatch({ type: '[CART] - UPDATE ADDRESS', payload: address });
     }
     
+    const createOrder = async () => {
+        if( !state.shippingAddress ) throw new Error('No hay dirección de entrega');
+
+        const order: IOrder = {
+            orderItems: state.cart.map(p => ({
+                ...p,
+                size: p.size!
+            })),
+            shippingAddress: state.shippingAddress,
+            numberOfItems: state.numberOfItems,
+            subtotal: state.subtotal,
+            total: state.total,
+            tax: state.tax,
+            isPaid: false,
+        }
+
+        try {
+
+            const { data } = await TesloApi.post('/orders', order);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <CartContext.Provider 
             value={{ 
                 ...state, 
                 
-                // Methods:
+                //* Methods:
                 addProduct,
                 updateCartQuantity,
                 removeCartProduct,
-                updateShippingAddress
+                updateShippingAddress,
+
+                //* Orders
+                createOrder,
             }}
         >
 
