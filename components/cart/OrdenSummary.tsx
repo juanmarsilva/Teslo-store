@@ -49,7 +49,7 @@ export const OrdenSummary = () => {
             </Grid>
             <Grid item xs={ 6 } sx={{ mt: 2 }} display='flex' justifyContent='end' >
 
-                <Typography>{ Currency.format(total) }</Typography>
+                <Typography variant='subtitle1'>{ Currency.format(total) }</Typography>
 
             </Grid>
         </Grid>
