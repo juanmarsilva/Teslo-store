@@ -24,12 +24,14 @@ import { countries } from '../../utils';
 imports necessary dependencies from various libraries and components. */
 const SummaryPage: NextPage = () => {
 
-    const { shippingAddress, numberOfItems } = useContext( CartContext );
+    const { shippingAddress, numberOfItems, createOrder } = useContext( CartContext );
     const { push } = useRouter();
 
     useEffect(() => {
         if(!Cookies.get('firstName')) push('/checkout/address');
-    }, [push])
+    }, [push]);
+
+    const onCreateOrder = () => createOrder();
 
     if( !shippingAddress ) return <></>;
 
@@ -102,7 +104,12 @@ const SummaryPage: NextPage = () => {
                             <OrdenSummary />
 
                             <Box sx={{ mt: 3 }}>
-                                <Button color='secondary' className='circular-btn' fullWidth >
+                                <Button 
+                                    color='secondary' 
+                                    className='circular-btn' 
+                                    fullWidth
+                                    onClick={onCreateOrder}
+                                >
                                     Confirm order
                                 </Button>
                             </Box>
