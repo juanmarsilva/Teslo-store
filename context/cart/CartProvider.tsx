@@ -1,4 +1,5 @@
 import { FC, PropsWithChildren, useEffect, useReducer, useRef } from 'react';
+import axios from 'axios';
 import Cookie from 'js-cookie';
 
 import { ICartProduct, IOrder, ShippingAddress } from '../../interfaces';
@@ -190,7 +191,16 @@ export const CartProvider: FC<Props> = ({ children }) => {
         dispatch({ type: '[CART] - UPDATE ADDRESS', payload: address });
     }
     
-    const createOrder = async () => {
+    /**
+     * The function `createOrder` is an asynchronous function that creates an order by sending a POST
+     * request to a specified API endpoint and returns a promise that resolves to an object with
+     * information about the success or failure of the operation.
+     * @returns The `createOrder` function returns a promise that resolves to an object with two
+     * properties: `hasError` and `message`. The `hasError` property is a boolean indicating whether an
+     * error occurred during the execution of the function. The `message` property is a string that
+     * provides additional information about the result of the function.
+     */
+    const createOrder = async (): Promise<{ hasError: boolean, message: string }> => {
         if( !state.shippingAddress ) throw new Error('No hay dirección de entrega');
 
         const order: IOrder = {
@@ -208,10 +218,27 @@ export const CartProvider: FC<Props> = ({ children }) => {
 
         try {
 
-            const { data } = await TesloApi.post('/orders', order);
+            const { data } = await TesloApi.post<IOrder>('/orders', order);
+
+            dispatch({ type: '[CART] - ORDER COMPLETE', payload: null });
+
+            return {
+                hasError: false,
+                message: data._id!
+            }
 
         } catch (error) {
-            console.log(error);
+            if( axios.isAxiosError(error) ) {
+                return {
+                    hasError: true,
+                    message: error.response?.data.message,
+                }
+            };
+
+            return {
+                hasError: true,
+                message: 'Error no controlado - Hable con el administrador',
+            }
         }
     };
 
