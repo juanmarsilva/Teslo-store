@@ -17,6 +17,7 @@ type CartActionType =
         total: number;
     } 
 }
+| { type: '[CART] - ORDER COMPLETE', payload: null }
 
 
 /**
@@ -84,6 +85,17 @@ export const cartReducer = ( state: CartState, { type, payload }: CartActionType
             shippingAddress: payload,
         }
     };
+
+    if( type === '[CART] - ORDER COMPLETE' ) {
+        return {
+            ...state,
+            cart: [],
+            numberOfItems: 0,
+            subtotal: 0,
+            tax: 0,
+            total: 0,
+        }
+    }
 
     return state;
 }
