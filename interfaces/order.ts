@@ -1,10 +1,10 @@
 import { ISize, IUser } from "./";
 
 export interface IOrder {
-    _id?:                string;
+    _id?:               string;
     user?:              IUser | string;
     orderItems:         Array<IOrderItem>;
-    shippingAddress:     ShippingAddress;
+    shippingAddress:    ShippingAddress;
     paymentResult?:     string;
 
     numberOfItems:      number;
@@ -14,6 +14,8 @@ export interface IOrder {
 
     isPaid:             boolean;
     paidAt?:            string;
+
+    transactionId?:     string;
 }
 
 export interface IOrderItem {
