@@ -19,6 +19,7 @@ import { ShopLayout, CartList, OrdenSummary } from '../../components';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { dbOrders } from '../../database';
 import { IOrder } from '../../interfaces';
+import { countries } from '../../utils';
 
 
 interface Props {
@@ -29,33 +30,39 @@ interface Props {
 that takes in a prop called `order` of type `IOrder`. */
 const OrderPage: NextPage<Props> = ({ order }) => {
 
-    console.log({ order });
+    const { _id, isPaid, numberOfItems, shippingAddress, orderItems } = order;
 
     return (
         <ShopLayout title='Order summary 542' pageDescription='Order summary' >
             
-            <Typography variant='h1' component='h1'> Order: 542 </Typography>
+            <Typography variant='h1' component='h1'> Order: { _id } </Typography>
 
-            {/* <Chip
-                sx={{ my: 2 }}
-                label='Outstanding'
-                variant='outlined'
-                color='error'
-                icon={ <CreditCardOffOutlined /> }
-            /> */}
+            {
+                isPaid
+                    ? (
+                        <Chip
+                            sx={{ my: 2 }}
+                            label='Paid'
+                            variant='outlined'
+                            color='success'
+                            icon={ <CreditScoreOutlined /> }
+                        />
+                    )
+                    : (
+                        <Chip
+                            sx={{ my: 2 }}
+                            label='Not paid'
+                            variant='outlined'
+                            color='error'
+                            icon={ <CreditScoreOutlined /> }
+                        />
+                    )
+            }
 
-            <Chip
-                sx={{ my: 2 }}
-                label='Paid'
-                variant='outlined'
-                color='success'
-                icon={ <CreditScoreOutlined /> }
-            />
-
-            <Grid container >
+            <Grid container className='fadeIn' >
                 <Grid item xs={ 12 } sm={ 7 } >
 
-                    <CartList editable={ false } />
+                    <CartList products={ orderItems }  />
 
                 </Grid>
 
@@ -65,48 +72,46 @@ const OrderPage: NextPage<Props> = ({ order }) => {
 
                         <CardContent>
 
-                            <Typography variant='h2' > Summary: (3 products ) </Typography>
+                            <Typography variant='h2' > 
+                                Summary: ({ numberOfItems } { numberOfItems > 1 ? 'products' : 'product'}) 
+                            </Typography>
 
                             <Divider sx={{ my: 1 }} />
 
-                            <Box display='flex' justifyContent='space-between' >
-                                <Typography variant='subtitle1'> Delivery address </Typography>
-                                <NextLink href='/checkout/address' passHref legacyBehavior >
-                                    <Link underline='always' >
-                                        Edit
-                                    </Link>
-                                </NextLink>
-                            </Box>
+                            <Typography> { shippingAddress.firstName } </Typography>
 
-                            <Typography> Juan Martin Silva </Typography>
-                            <Typography> 31 - 803 </Typography>
-                            <Typography> Mercedes, Buenos Aires </Typography>
-                            <Typography> Argentina </Typography>
-                            <Typography> +54 9 2324 498482 </Typography>
+                            <Typography> 
+                                { shippingAddress.address } { shippingAddress.address2 ? `, ${shippingAddress.address2}` : '' }
+                            </Typography>
+
+                            <Typography> { shippingAddress.city }, { shippingAddress.zipCode } </Typography>
+
+                            <Typography> 
+                                { countries.find(c => c.code === shippingAddress.country)?.name  } 
+                            </Typography>
+
+                            <Typography>  { shippingAddress.phone } </Typography>
 
                             <Divider sx={{ my: 1 }} />
 
-                            <Box display='flex' justifyContent='end' >
-                                <NextLink href='/cart' passHref legacyBehavior >
-                                    <Link underline='always' >
-                                        Edit
-                                    </Link>
-                                </NextLink>
-                            </Box>
+                            <OrdenSummary order={order} />
 
-                            <OrdenSummary />
-
-                            <Box sx={{ mt: 3 }}>
-                                {/* TODO */}
-                                <h1>Pagar</h1>
-
-                                <Chip
-                                    sx={{ my: 2 }}
-                                    label='Paid'
-                                    variant='outlined'
-                                    color='success'
-                                    icon={ <CreditScoreOutlined /> }
-                                />
+                            <Box sx={{ mt: 3 }} display='flex' flexDirection='column' >
+                                {
+                                    isPaid
+                                        ? (
+                                            <Chip
+                                                sx={{ my: 2 }}
+                                                label='Paid'
+                                                variant='outlined'
+                                                color='success'
+                                                icon={ <CreditScoreOutlined /> }
+                                            />
+                                        )
+                                        : (
+                                            <h1>Pagar</h1>
+                                        )
+                                }
                             </Box>
 
                         </CardContent>
