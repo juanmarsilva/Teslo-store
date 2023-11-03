@@ -1,34 +1,46 @@
-import NextLink from 'next/link';
-import { Grid, Typography, Link, CardActionArea, CardMedia, Box, Button } from '@mui/material';
-import { ItemCounter } from '../ui';
 import { FC, useContext } from 'react';
+import NextLink from 'next/link';
+
+import { 
+    Grid, 
+    Typography, 
+    Link, 
+    CardActionArea, 
+    CardMedia, 
+    Box, 
+    Button 
+} from '@mui/material';
+
+import { ItemCounter } from '../ui';
 import { CartContext } from '../../context';
-import { ICartProduct } from '../../interfaces';
+import { ICartProduct, IOrderItem } from '../../interfaces';
 
 
 
 interface Props {
-    editable: boolean;
+    editable?: boolean;
+    products?: Array<IOrderItem>;
 }
 
 
-export const CartList: FC<Props> = ({ editable }) => {
+export const CartList: FC<Props> = ({ editable = false, products = [] }) => {
 
     const { cart, updateCartQuantity, removeCartProduct } = useContext( CartContext );
 
     const updateProductQuantity = ( product: ICartProduct, newQuantity: number ) => {
         product.quantity = newQuantity;
         updateCartQuantity(product);
-    }
+    };
+
+    const productsToShow = products ? products : cart;
     
     return (
         <>
             {
-                cart.map(({ image, price, _id, inStock, size, slug, title, quantity }, index)=> (
+                productsToShow.map(({ image, price, size, slug, title, quantity }, index)=> (
                     <Grid container spacing={ 2 } sx={{ mb: 1 }} key={ slug + size } >
 
                         <Grid item xs={ 3 } >
-                            {/* TODO: LLevar a la pagina del producto */}
                             <NextLink href={`/product/${slug}`} passHref legacyBehavior >
                                 <Link>
                                     <CardActionArea>
@@ -54,7 +66,7 @@ export const CartList: FC<Props> = ({ editable }) => {
                                     ? (
                                         <ItemCounter 
                                             currentValue={ quantity } 
-                                            maxValue={ inStock } 
+                                            maxValue={ 10 } 
                                             onUpdateQuantity={( value ) => updateProductQuantity(cart[index], value)}     
                                         />
                                     )
