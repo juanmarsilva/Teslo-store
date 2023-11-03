@@ -27,5 +27,23 @@ export const getOrderById = async ( id: string ): Promise<IOrder | null> => {
     return JSON.parse(JSON.stringify(order));
 }
 
+/**
+ * The function `getOrdersByUser` retrieves orders from the database for a given user ID.
+ * @param {string} userId - The userId parameter is a string that represents the ID of the user for
+ * whom we want to retrieve the orders.
+ * @returns a Promise that resolves to an array of IOrder objects.
+ */
+export const getOrdersByUser = async ( userId: string ): Promise<Array<IOrder>> => {
+    
+    if( !isValidObjectId(userId) ) return [];
 
+    await db.connect();
+
+    const orders = await Order.find({ user: userId }).lean();
+
+    await db.disconnect();
+
+    return JSON.parse(JSON.stringify(orders));
+
+}
 
