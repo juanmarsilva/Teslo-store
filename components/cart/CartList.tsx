@@ -32,7 +32,7 @@ export const CartList: FC<Props> = ({ editable = false, products = [] }) => {
         updateCartQuantity(product);
     };
 
-    const productsToShow = products ? products : cart;
+    const productsToShow = products.length ? products : cart;
     
     return (
         <>
