@@ -28,9 +28,7 @@ import {
     VpnKeyOutlined 
 } from "@mui/icons-material";
 
-import { MaterialUISwitch } from "./custom"
 import { AuthContext, UIContext } from '../../context';
-
 
 export const SideMenu = () => {
 
@@ -183,11 +181,6 @@ export const SideMenu = () => {
                             </>
                         )
                     }
-                    
-                    <Box display='flex' justifyContent='center'  >
-                        <MaterialUISwitch sx={{ m: 1 }} defaultChecked={ false } />
-                    </Box>
-
                 </List>
             </Box>
         </Drawer>
